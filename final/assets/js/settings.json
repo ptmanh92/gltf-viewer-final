@@ -1,0 +1,117 @@
+{
+    "cameras": {
+        "standard": [
+            {
+                "name": "Perspective",
+                "type": "perspective",
+                "default": {
+                    "aspectRatio": 1.0,
+                    "yfov": 1.57,
+                    "zfar": 100.0,
+                    "znear": 0.01
+                },
+                "aspectRatio": 1.0,
+                "yfov": 1.57,
+                "zfar": 100.0,
+                "znear": 0.01
+            },
+            {
+                "name": "Orthographic",
+                "type": "orthographic",
+                "default": {
+                    "xmag": 1.0,
+                    "ymag": 1.0,
+                    "zfar": 100.0,
+                    "znear": 0.01
+                },
+                "xmag": 1.0,
+                "ymag": 1.0,
+                "zfar": 100.0,
+                "znear": 0.01
+            }
+        ],
+        "gltf": [],
+        "position": {
+            "default": {  
+                "x": 0.0,
+                "y": 0.0,
+                "z": -1.5
+            },
+            "x": 0.0,
+            "y": 0.0,
+            "z": -1.5
+        }
+    },
+
+    "transformation": {
+        "translation": {
+            "name": "Translation",
+            "children": [
+                {
+                    "name": "X",
+                    "value": 0
+                },
+                {
+                    "name": "Y",
+                    "value": 0
+                },
+                {
+                    "name": "Z",
+                    "value": 0
+                }
+            ],
+            "min": null,
+            "max": null,
+            "step": 1,
+            "default": 0
+        },
+        "rotation": {
+            "name": "Rotation",
+            "children": [
+                {
+                    "name": "X",
+                    "value": 0
+                },
+                {
+                    "name": "Y",
+                    "value": 0
+                },
+                {
+                    "name": "Z",
+                    "value": 0
+                }
+            ],
+            "min": -360,
+            "max": 360,
+            "step": 1,
+            "default": 0
+        },
+        "scale": {
+            "name": "Scale",
+            "children": [
+                {
+                    "name": "X",
+                    "value": 1
+                },
+                {
+                    "name": "Y",
+                    "value": 1
+                },
+                {
+                    "name": "Z",
+                    "value": 1
+                }
+            ],
+            "min": 1,
+            "max": 10,
+            "step": 0.1,
+            "default": 1
+        }
+    },
+
+    "mouse_move": {
+        "rotation_speed": 100
+    },
+    "background_color": [0.19, 0.19, 0.19, 1.0],
+    "static_color": [1.0, 1.0, 1.0, 1.0]
+}

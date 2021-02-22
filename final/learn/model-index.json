@@ -1,0 +1,36 @@
+[
+    {
+        "name": "Simple triangle",
+        "mode": "3d",
+        "vertexscript": "learn_vertexscript.glsl",
+        "fragmentscript": "learn_fragmentscript.glsl",
+        "vertex_attributes": {
+            "position": true,
+            "color": true
+        },
+        "components": 3
+    },
+    {
+        "name": "Simple cube",
+        "mode": "3d",
+        "vertexscript": "learn_vertexscript.glsl",
+        "fragmentscript": "learn_fragmentscript.glsl",
+        "vertex_attributes": {
+            "position": true,
+            "color": true
+        },
+        "components": 3
+    },
+    {
+        "name": "Simple image",
+        "mode": "2d",
+        "vertexscript": "learn_simple_image_vertexscript.glsl",
+        "fragmentscript": "learn_simple_image_fragmentscript.glsl",
+        "vertex_attributes": {
+            "position": true,
+            "texture_coord": true
+        },
+        "components": 2,
+        "images": ["gltf_01.jpg", "gltf_02.jpg", "gltf_03.jpg"]
+    }
+]

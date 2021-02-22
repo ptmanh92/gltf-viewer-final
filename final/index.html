@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS core -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Fontawesome 4 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- JSZip -->
+    <script src="assets/js/jszip.min.js"></script>
+    <title>Final</title>
+</head>
+<body>
+    <div class="page_wrapper">
+        <div id="canvas_container">
+            <canvas id="my_canvas"></canvas>
+        </div>
+        <div id="options">
+            <div id="accordion">
+                <!-- Basic WebGL examples -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#basic_webgl">
+                        <div class="title"><i class="fa fa-graduation-cap" aria-hidden="true"></i><span>Basic WebGL examples</span></div>
+                    </div>
+                    <div id="basic_webgl" class="collapse" data-parent="#accordion">
+                        <div class="content" id="basic_examples_content"></div>
+                    </div>
+                </div>
+
+                <!-- <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#sample_models">
+                        <div class="title"><i class="fa fa-cubes" aria-hidden="true"></i><span>Sample models</span></div>
+                    </div>
+                    <div id="sample_models" class="collapse" data-parent="#accordion">
+                        <div class="content" id="sample_models_content"></div>
+                    </div>
+                </div> -->
+
+                <!-- Model from Zip -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#zip_details">
+                        <div class="title"><i class="fa fa-file-archive-o" aria-hidden="true"></i><span>Model from Zip</span></div>
+                    </div>
+                    <div id="zip_details" class="collapse show" data-parent="#accordion">
+                        <div class="content" id="zip_details_content">
+                            <div class="zip_browser">
+                                <input type="file" id="file_browser" name="file_browser" />
+                            </div>
+                            <div class="zip_content" id="files_content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- glTF details -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#gltf_details">
+                        <div class="title"><i class="fa fa-cube" aria-hidden="true"></i><span>glTF details</span></div>
+                    </div>
+                    <div id="gltf_details" class="collapse" data-parent="#accordion">
+                        <div class="content" id="gltf_details_content">
+                            <div class="form-group">
+                                <label for="scene_list">Scenes</label>
+                                <select class="form-control" id="scene_list" name="scene_list" onchange="select_scene(this)" value="0"></select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="color_channel">Channel</label>
+                                <select class="form-control" id="color_channel" name="color_channel" onchange="draw(false)" value="0">
+                                    <option value="0">All</option>
+                                    <option value="1">Static color</option>
+                                    <option value="2">Base color</option>
+                                    <option value="3">Occlusion</option>
+                                    <option value="4">Emissive</option>
+                                </select>
+                            </div>
+
+                            <div id="animations">
+                                <div>Animations</div>
+                                <div class="content" id="animation_list">
+                                    Select a model to load animations...
+                                </div>
+                            </div>
+
+                            <div id="gltf_textures">
+                                <div id="gltf_textures_title">Textures</div>
+                                <div id="gltf_textures_content"></div>
+                                <div id="gltf_textures_notice">No textures yet...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transformations -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#transformations">
+                        <div class="title"><i class="fa fa-arrows" aria-hidden="true"></i><span>Transformations</span></div>
+                    </div>
+                    <div id="transformations" class="collapse" data-parent="#accordion">
+                        <div class="content" id="transformations_content"></div>
+                        <div class="reset_button">
+                            <button class="btn btn-link" id="trans_reset_btn" onclick="reset_trans_value()">Reset to default</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camera -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#camera_list">
+                        <div class="title"><i class="fa fa-video-camera" aria-hidden="true"></i><span>Camera</span></div>
+                    </div>
+                    <div id="camera_list" class="collapse" data-parent="#accordion">
+                        <div class="content" id="camera_content">
+                            <div id="camera_title">
+                                <select class="form-control" id="all_cams" name="all_cams" onchange="select_camera(this)"></select>
+                            </div>
+                            <div id="camera_input"></div>
+                            <div id="camera_position"></div>
+                            <div class="reset_button">
+                                <button class="btn btn-link" id="camera_reset_btn" onclick="reset_camera()">Reset to default</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Options -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#options_details">
+                        <div class="title"><i class="fa fa-cog" aria-hidden="true"></i><span>Options</span></div>
+                    </div>
+                    <div id="options_details" class="collapse" data-parent="#accordion">
+                        <div class="content" id="options_details_content">
+                            <div class="input-group" id="option_static_color">
+                                <div class="input-group-prepend"> <span class="input-group-text">Static color</span></div>
+                                <input id="static_red" type="number" min="0" max="255" step="1" class="form-control" placeholder="R" onchange="update_static_color(this)" data-type="static">
+                                <input id="static_green" type="number" min="0" max="255" step="1" class="form-control" placeholder="G" onchange="update_static_color(this)" data-type="static">
+                                <input id="static_blue" type="number" min="0" max="255" step="1" class="form-control" placeholder="B" onchange="update_static_color(this)" data-type="static">
+                                <input id="static_alpha" type="number" min="0" max="1" step="0.1" class="form-control" placeholder="A" onchange="update_static_color(this)" data-type="static">
+                            </div>
+
+                            <div class="input-group" id="option_bkgr_color">
+                                <div class="input-group-prepend"><span class="input-group-text">Background</span></div>
+                                <input id="bkgr_red" type="number" min="0" max="255" step="1" class="form-control" placeholder="R" onchange="update_static_color(this)" data-type="bkgr">
+                                <input id="bkgr_green" type="number" min="0" max="255" step="1" class="form-control" placeholder="G" onchange="update_static_color(this)" data-type="bkgr">
+                                <input id="bkgr_blue" type="number" min="0" max="255" step="1" class="form-control" placeholder="B" onchange="update_static_color(this)" data-type="bkgr">
+                                <input id="bkgr_alpha" type="number" min="0" max="1" step="0.1" class="form-control" placeholder="A" onchange="update_static_color(this)" data-type="bkgr">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About -->
+                <div class="accordion_item">
+                    <div data-toggle="collapse" data-target="#about">
+                        <div class="title"><i class="fa fa-info-circle" aria-hidden="true"></i><span>About</span></div>
+                    </div>
+                    <div id="about" class="collapse" data-parent="#accordion">
+                        <div class="content">
+                            The Manh Phan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="loading_spinner">
+        <div class="content">
+            <div class="spinner-border text-light"></div>
+            <div id="spinner_text"></div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- glMatrix v3.3.0 -->
+    <script src="assets/js/gl-matrix.js"></script>
+
+    <!-- New Math library -->
+    <script src="assets/js/math.js"></script>
+
+    <!-- Support GUI -->
+    <script src="assets/js/support.js"></script>
+    
+    <!-- Main scripts -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
