@@ -120,18 +120,28 @@
             "mesh" : 0,
             "name" : "Orange Object",
             "translation": [
-                -1.2,
+                -0.24,
                 0,
                 0
+            ],
+            "scale": [
+                0.2,
+                0.2,
+                0.2
             ]
         },
         {
             "mesh" : 1,
             "name" : "Blue Object",
             "translation": [
-                1.2,
+                0.24,
                 0,
                 0
+            ],
+            "scale": [
+                0.2,
+                0.2,
+                0.2
             ]
         }
     ],

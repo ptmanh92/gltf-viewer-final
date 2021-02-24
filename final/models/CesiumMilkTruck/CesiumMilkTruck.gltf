@@ -61,7 +61,17 @@
         3
       ],
       "mesh": 1,
-      "name": "Cesium_Milk_Truck"
+      "name": "Cesium_Milk_Truck",
+      "translation": [
+        0.0,
+        0.0,
+        0.3
+      ],
+      "scale": [
+        0.3,
+        0.3,
+        0.3
+      ]
     },
     {
       "children": [

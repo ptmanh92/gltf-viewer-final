@@ -21,7 +21,12 @@
     "nodes": [
         {
             "mesh": 0,
-            "name": "SheenCloth_mesh"
+            "name": "SheenCloth_mesh",
+            "scale": [
+                14,
+                14,
+                14
+            ]
         }
     ],
     "meshes": [
