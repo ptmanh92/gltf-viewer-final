@@ -1492,11 +1492,27 @@ const gui_textures = (gltf_file) => {
         gltf_textures_notice.innerText = "";
         for (let image of gltf_file.images) {
             let html_image = image.data;
-            gltf_textures_content.appendChild(image.data);
+            // html_image.setAttribute('data-toggle', 'modal');
+            // html_image.setAttribute('data-target', '#texture_zoom');
+            html_image.setAttribute('onclick', 'show_image(this)')
+            gltf_textures_content.appendChild(html_image);
         }
     } else {
         gltf_textures_notice.innerText = "No textures available"
     }
+}
+
+const show_image = (self) => {
+    let image_wrapper = document.getElementById('image_wrapper');
+    image_wrapper.innerHTML = "";
+
+    let large_image = document.createElement('img')
+    let image_source = self.getAttribute('src');
+    large_image.setAttribute('src', image_source);
+
+    image_wrapper.appendChild(large_image);
+
+    jQuery('#texture_zoom').modal('toggle')
 }
 
 /*========================= Options ==========================*/
