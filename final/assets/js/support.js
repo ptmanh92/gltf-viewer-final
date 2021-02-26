@@ -362,16 +362,28 @@ GLTF.prepare_buffers = async (model_data) => {
             GLTF.create_property(buffer, 'uri');
 
             if (buffer.uri !== null) {
-                for (let bin of model_data.bin) {
-                    if (buffer.uri == get_file_name_from_uri(bin.name)) {   // Get bin file as ArrayBuffer
-                        await bin.async("arraybuffer")
-                        .then(function (content) {
-                            buffer.data = content;
-                        }, function(e) {
-                            console.log("=> ERROR: converting buffer to ArrayBuffer failed!!! " + e.message);
-                        });
-                    } else {    // Decode base64
-                        // TODO
+                if (model_data.bin.length > 0) {
+                    for (let bin of model_data.bin) {
+                        if (buffer.uri == get_file_name_from_uri(bin.name)) {   // Get bin file as ArrayBuffer
+                            await bin.async("arraybuffer")
+                            .then(function (content) {
+                                buffer.data = content;
+                            }, function(e) {
+                                console.log("=> ERROR: converting buffer to ArrayBuffer failed!!! " + e.message);
+                            });
+                        }
+                    }
+                } else {
+                    // Decode base64
+                    if (buffer.uri.startsWith('data:application/octet-stream;base64,')) {
+                        console.log(true)
+                        let base64_str = buffer.uri.slice(37, buffer.uri.length);
+                        let bin_str = window.atob(base64_str);
+                        let bytes = new Uint8Array(bin_str.length);
+                        for (let i = 0; i < bin_str.length; i++) {
+                            bytes[i] = bin_str.charCodeAt(i);
+                        }
+                        buffer.data = bytes.buffer;
                     }
                 }
             }
@@ -611,41 +623,54 @@ GLTF.prepare_images = async (model_data) => {
             GLTF.create_property(image, 'extensions');
             GLTF.create_property(image, 'extras');
 
-            for (let model_img of model_data.images) {
-                if (image.bufferView !== undefined && image.bufferView !== null) {
-                    // TODO
-                } else if (image.uri == model_img.name) {
-                    // await model_img.async("arraybuffer")
-                    // .then(function(content) {
-                    //     // console.log(content);
-                    //     var buffer = new Uint8Array(content);
-                    //     var blob = new Blob([buffer.buffer]);
-                    //     console.log(blob);
-                    //     var img = new Image;
-                    //     img.crossOrigin = "Anonymous";
-                    //     img.src = URL.createObjectURL(blob);
-                    //     img.onload = function() {
-                    //         document.getElementById('zip_details_content').appendChild(this);
-                    //         image.data = this
-                    //     }
-                    // }, function(e) {
-                    //     console.log("=> ERROR: converting image to arraybuffer failed!!! " + e.message);
-                    // });
+            if (model_data.images.length > 0) {
+                for (let model_img of model_data.images) {
+                    if (image.uri == model_img.name) {
+                        // await model_img.async("arraybuffer")
+                        // .then(function(content) {
+                        //     // console.log(content);
+                        //     var buffer = new Uint8Array(content);
+                        //     var blob = new Blob([buffer.buffer]);
+                        //     console.log(blob);
+                        //     var img = new Image;
+                        //     img.crossOrigin = "Anonymous";
+                        //     img.src = URL.createObjectURL(blob);
+                        //     img.onload = function() {
+                        //         document.getElementById('zip_details_content').appendChild(this);
+                        //         image.data = this
+                        //     }
+                        // }, function(e) {
+                        //     console.log("=> ERROR: converting image to arraybuffer failed!!! " + e.message);
+                        // });
 
-                    let img_extension = get_file_extension(model_img.name);
+                        let img_extension = get_file_extension(model_img.name);
 
-                    await model_img.async("base64")
-                    .then(function (content) {
-                        let mime_type = get_img_mime_type(img_extension);
-                        if (mime_type !== null && mime_type !== undefined) {
-                            var new_img = new Image();
-                            new_img.src = "data:" + mime_type + ";base64," + content;
+                        await model_img.async("base64")
+                        .then(function (content) {
+                            let mime_type = get_img_mime_type(img_extension);
+                            if (mime_type !== null && mime_type !== undefined) {
+                                var new_img = new Image();
+                                new_img.src = "data:" + mime_type + ";base64," + content;
+                                
+                                image.data = new_img
+                            }
+                        }, function(e) {
+                            console.log("=> ERROR: converting image to base64 failed!!! " + e.message);
+                        });
+                    }
+                }
+            } else {
+                if (image.bufferView !== undefined && image.bufferView !== null && image.mimeType !== undefined && image.mimeType !== null) {
+                    let bin = "";
+                    let bytes = new Uint8Array(GLTF_FILE.value.bufferViews[image.bufferView].data);
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        bin += String.fromCharCode(bytes[i]);
+                    }
+                    let base_str = window.btoa(bin);
 
-                            image.data = new_img
-                        }
-                    }, function(e) {
-                        console.log("=> ERROR: converting image to base64 failed!!! " + e.message);
-                    });
+                    let new_img = new Image();
+                    new_img.src = "data:" + image.mimeType + ";base64," + base_str;
+                    image.data = new_img
                 }
             }
         }
@@ -1330,7 +1355,7 @@ const camera_detail = (cam_id) => {
         // if (fov < -360) fov = -360
         // if (fov > 360) fov = 360
         camera_input.innerHTML += create_input_range("FOV", "yfov_value", "yfov", fov, -360, 360, 1, "update_camera(this)", 'data-cam-id="'+cam_id+'" data-field-name="yfov"')
-        camera_input.innerHTML += create_input_number("Aspect ratio", "aspectRatio", "", "", 0.1, current_cam.aspectRatio, "update_camera(this)", 'data-cam-id="'+cam_id+'" data-field-name="aspectRatio"');
+        camera_input.innerHTML += create_input_number("Aspect ratio", "aspectRatio", "", "", 0.1, current_cam.aspectRatio || optimal_aspect_ratio(), "update_camera(this)", 'data-cam-id="'+cam_id+'" data-field-name="aspectRatio"');
     }
 
     if (current_cam.type == "orthographic") {
